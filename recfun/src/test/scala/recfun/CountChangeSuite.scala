@@ -25,4 +25,20 @@ class CountChangeSuite extends FunSuite {
     assert(countChange(300,List(500,5,50,100,20,200,10)) === 1022)
   }
 
+  test("countChange: 5 of 1,2,3") {
+    assert(countChange(5,List(1,2,3)) === 5)
+  }
+
+  test("countChange: 0 of 1,2,3 is 0") {
+    assert(countChange(0,List(1,2,3)) === 0)
+  }
+
+  test("countChange: 0 of Nil is 0") {
+    assert(countChange(0,Nil) === 0)
+  }
+
+  test("countChange: 4 of Nil is 0") {
+    assert(countChange(4,Nil) === 0)
+  }
+
 }

@@ -26,4 +26,8 @@ class BalanceSuite extends FunSuite {
     assert(!balance("())(".toList))
   }
 
+  test("balance: without brackets its always balanced") {
+    assert(balance("something without brackets".toList))
+  }
+
 }
