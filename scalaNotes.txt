@@ -1,0 +1,24 @@
+* call-by-value VS call-by-name
+  def function(byValue : Int, byName : => Int) = ...
+
+  def = by name
+    def x = square(22) => evaluated at each use
+  val = by value
+    val x = square(22) => evaluated only once
+
+* lexical scope
+  { ... } = is an expression!
+  definitions from outside the block are visible inside the block
+  definitions inside the block shadows definitions from outside the block
+  definitions inside the block are not visible outside the block
+
+* Multiple parameter lists - shortcut for function that return a function - for currying
+  def sum(f: Int => Int)(a: Int, b: Int): Int   ===   def sum(f: Int => Int): (Int, Int) => Int
+  usage: sum (cube) (10, 20)
+
+
+
+Videos:
+* https://www.youtube.com/watch?v=3jg1AheF4n0 (16min)
+* https://www.youtube.com/watch?v=xUWNcL7NRxg (1h15min)
+* https://www.youtube.com/watch?v=NW5h8d_ZyOs (44min)
