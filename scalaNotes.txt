@@ -18,7 +18,35 @@
 
 
 
-Videos:
-* https://www.youtube.com/watch?v=3jg1AheF4n0 (16min)
-* https://www.youtube.com/watch?v=xUWNcL7NRxg (1h15min)
-* https://www.youtube.com/watch?v=NW5h8d_ZyOs (44min)
+
+
+
+
+
+
+  Videos:
+  * Panel on the Past, Present, and Future of Scala (1h15min) = https://www.youtube.com/watch?v=xUWNcL7NRxg
+  * Spark -- the Ultimate Scala Collections (44min) = https://www.youtube.com/watch?v=NW5h8d_ZyOs
+
+  * Functional Programming Vs Imperative Programming =
+    in imperative you think about Time = first the processor will do this, then that
+      parallelism is hard = you need to synchronize processes using control structures like locks, atomics, software transactional memory to rule out bad combinations of threads
+    in functional you thing about Space = first I construct this, then that, and then I will construct the third thing from first and second
+      easy parallelism = you just build different parts of your final construct on different processes
+
+
+
+
+
+
+
+
+????? For Future ?????
+* Parallel Collections
+* Distributed Collections
+* Actors = Akka
+* DSLs = scala parser combinators
+  http://bitwalker.org/posts/2013-08-10-learn-by-example-scala-parser-combinators/
+  https://wiki.scala-lang.org/display/SW/Parser+Combinators--Getting+Started
+  https://github.com/scala/scala-parser-combinators/blob/1.0.x/docs/Getting_Started.md
+  http://debasishg.blogspot.com/2008/04/external-dsls-made-easy-with-scala.html

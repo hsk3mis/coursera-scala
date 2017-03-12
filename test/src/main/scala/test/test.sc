@@ -7,7 +7,6 @@ product(x => x * x)(3, 4)
 def factorial(n: Int) = product(x => x)(1, n)
 
 factorial(5)
-
 def mapReduce(f: Int => Int, combine: (Int, Int) => Int, zero: Int)(a: Int, b:Int): Int =
   if (a > b) zero
   else combine(f(a), mapReduce(f, combine, zero)(a + 1, b))
@@ -48,3 +47,5 @@ def y = { println("y init"); 456 }
 val a = new A(x, y)
 "-a = " + (-a).toS
 "a.unary_- = " + a.unary_-.toS
+
+List(1,2,3,4,5).filter(_ % 2 == 1)
