@@ -11,9 +11,7 @@ class Tweet(val user: String, val text: String, val retweets: Int) {
     "Text: " + text + " [" + retweets + "]"
 }
 
-object Tweet {
-  val emptyTweet: Tweet = new Tweet(null, null, -1)
-}
+object EmptyTweet extends Tweet(null, null, -1)
 
 
 /**
@@ -120,7 +118,7 @@ class Empty extends TweetSet {
 
   def mostRetweeted: Nothing = throw new NoSuchElementException
 
-  def mostRetweetedNoException: Tweet = Tweet.emptyTweet
+  def mostRetweetedNoException: Tweet = EmptyTweet
 
   def descendingByRetweet: TweetList = Nil
 
