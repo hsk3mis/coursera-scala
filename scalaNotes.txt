@@ -6,6 +6,14 @@
   val = by value
     val x = square(22) => evaluated only once
 
+
+  - def - defines an immutable label for the right side content which is lazily evaluated - evaluate by name + evaluated every time it gets accessed
+        def can be overriden by val in subclasses, but not the other way around!
+  - val - defines an immutable label for the right side content which is eagerly/immediately evaluated - evaluated by value.
+  - lazy lav - evaluated lazily + properly only once + if you get exception during evaluation then another access will try to reevaluate it
+  - var - defines a mutable variable, initially set to the evaluated right side content.
+
+
 * lexical scope
   { ... } = is an expression!
   definitions from outside the block are visible inside the block
@@ -16,6 +24,33 @@
   def sum(f: Int => Int)(a: Int, b: Int): Int   ===   def sum(f: Int => Int): (Int, Int) => Int
   usage: sum (cube) (10, 20)
 
+* Dynamic dispatch of methods is analogous to calls to higher-order function
+    Open questions?
+      - can we implement Objects in terms of higher-order functions?
+      - can we implement higher-order functions in terms of objects?
+
+* Class Hierarchy
+  Any (methods: ==, !=, equals, hashCode, toString)
+    - AnyVal = all value classes (primitive classes)
+      -- Int
+      -- Boolean
+      -- Unit
+    - AnyRef = alias (different name) for java.lang.Object
+      -- ScalaObject
+        -- other Scala classes
+      -- other Java classes
+  Nothing = inherits from every Any class, but also inherits from Null => there's no value of type Nothing
+    1. To signal abnormal termination => function that throws exception or terminates the program
+      type of expression "throw Exception" is Nothing
+    2. As an element type of empty collections => Set[Nothing]
+  Null = inherits from every AnyRef class => the type of the "null" value
+    val s: String = null //OK
+    val i: Int = null //Error: type mismatch (because Null is subtype of all AnyRef, and Int is AnyVal)
+
+* Constructor with field definitions:
+  class A(val i: Int) => is equivalent to class A(_i: Int) { val i = _i }
+  Field definitions in classes are just special cases of methods and can override methods
+  
 
 
 
@@ -24,21 +59,19 @@
 
 
 
-  Videos:
+
+
+
+
+
+Videos:
   * Panel on the Past, Present, and Future of Scala (1h15min) = https://www.youtube.com/watch?v=xUWNcL7NRxg
   * Spark -- the Ultimate Scala Collections (44min) = https://www.youtube.com/watch?v=NW5h8d_ZyOs
 
-  * Functional Programming Vs Imperative Programming =
-    in imperative you think about Time = first the processor will do this, then that
-      parallelism is hard = you need to synchronize processes using control structures like locks, atomics, software transactional memory to rule out bad combinations of threads
-    in functional you thing about Space = first I construct this, then that, and then I will construct the third thing from first and second
-      easy parallelism = you just build different parts of your final construct on different processes
 
-
-
-
-
-
+Diassembling Scala code:
+  * javap -p => shows public and private members of the class
+  * javap -c => shows implementation of the methods
 
 
 ????? For Future ?????
