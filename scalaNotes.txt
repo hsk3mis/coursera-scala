@@ -50,7 +50,18 @@
 * Constructor with field definitions:
   class A(val i: Int) => is equivalent to class A(_i: Int) { val i = _i }
   Field definitions in classes are just special cases of methods and can override methods
-  
+
+* Changing getters/setters of properties:
+  if you start with class A(var i: Int) and want to override mutators then you need to refactor into
+  class A(private var _i: Int) {
+    def i: Int = _i                     //getter
+    def i_=(newI: Int) = _i = newI      //mutator
+  }
+  Client code don't change, because obj.property is a shortcut for obj.property() and method name property_= allows client to use obj.property = XXX
+
+* Pure Object-Oriented Language (every value is an object, type of each value is a class)
+  - primitive types = Int / Boolean => are objects and you can treat them like objects, but scala compiler represent them as int/boolean for efficiency reasons (optimization)
+  - functions = 
 
 
 
