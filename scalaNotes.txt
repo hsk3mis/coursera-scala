@@ -138,6 +138,10 @@
   - operators ending in ":" are also treated as method calls of the right-hand side
     1 :: 2 :: Nil   ==>   Nil.::(2).::(1)
 
+* Tuple
+  - creation: val pair = ("abc", 123)
+  - accessor: pair._1, pair._2
+  - pattern matching: case (first, second) => ...
 
 
 

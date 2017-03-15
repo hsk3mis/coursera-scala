@@ -24,9 +24,17 @@ object Huffman {
   
 
   // Part 1: Basics
-    def weight(tree: CodeTree): Int = ??? // tree match ...
+  def weight(tree: CodeTree): Int =
+      tree match {
+        case Leaf(_, weight) => weight
+        case Fork(_, _, _, weight) => weight
+      }
   
-    def chars(tree: CodeTree): List[Char] = ??? // tree match ...
+  def chars(tree: CodeTree): List[Char] =
+    tree match {
+      case Leaf(char, _) => List(char)
+      case Fork(_, _, chars, _) => chars
+    }
   
   def makeCodeTree(left: CodeTree, right: CodeTree) =
     Fork(left, right, chars(left) ::: chars(right), weight(left) + weight(right))
@@ -48,8 +56,8 @@ object Huffman {
    *   times(List('a', 'b', 'a'))
    *
    * should return the following (the order of the resulting list is not important):
-   *
-   *   List(('a', 2), ('b', 1))
+    *
+    *   List(('a', 2), ('b', 1))
    *
    * The type `List[(Char, Int)]` denotes a list of pairs, where each pair consists of a
    * character and an integer. Pairs can be constructed easily using parentheses:
@@ -69,21 +77,44 @@ object Huffman {
    *       println("integer is  : "+ theInt)
    *   }
    */
-    def times(chars: List[Char]): List[(Char, Int)] = ???
+    def times(chars: List[Char]): List[(Char, Int)] =
+      chars.sorted match {
+        case Nil => Nil
+        case x :: xs => timesRec(xs, (x, 1))
+      }
+
+    def timesRec(chars: List[Char], previousChar: (Char, Int)): List[(Char, Int)] =
+      chars match {
+        case Nil => List(previousChar)
+        case x :: xs =>
+            if (previousChar._1 == x) timesRec(xs, previousChar.copy(_2 = previousChar._2 + 1))
+            else previousChar :: timesRec(xs, (x, 1))
+      }
   
   /**
    * Returns a list of `Leaf` nodes for a given frequency table `freqs`.
    *
    * The returned list should be ordered by ascending weights (i.e. the
    * head of the list should have the smallest weight), where the weight
-   * of a leaf is the frequency of the character.
+    * of a leaf is the frequency of the character.
    */
-    def makeOrderedLeafList(freqs: List[(Char, Int)]): List[Leaf] = ???
+    def makeOrderedLeafList(freqs: List[(Char, Int)]): List[Leaf] =
+      makeOrderedLeafListRec(freqs.sortWith(_._2 < _._2))
+
+    def makeOrderedLeafListRec(freqsSorted: List[(Char, Int)]): List[Leaf] =
+      freqsSorted match {
+        case Nil => Nil
+        case (char, weight) :: xs => Leaf(char, weight) :: makeOrderedLeafListRec(xs)
+      }
   
   /**
    * Checks whether the list `trees` contains only one single code tree.
    */
-    def singleton(trees: List[CodeTree]): Boolean = ???
+    def singleton(trees: List[CodeTree]): Boolean =
+      trees match {
+        case x :: Nil => true
+        case _ => false
+      }
   
   /**
    * The parameter `trees` of this function is a list of code trees ordered
