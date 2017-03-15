@@ -61,7 +61,82 @@
 
 * Pure Object-Oriented Language (every value is an object, type of each value is a class)
   - primitive types = Int / Boolean => are objects and you can treat them like objects, but scala compiler represent them as int/boolean for efficiency reasons (optimization)
-  - functions = 
+  - functions = function values are objects in Scala (A => B is shortcut for scala.Function1[A,B]) with apply() method
+  - methods = are not objects, but if used in a place where function value is expected it's automatically converted to the function value
+
+  object List {
+    //List(1, 2) ==> expands to: List.apply(1, 2)
+    def apply[T](x1: T, x2: T): List[T] = new Cons(x1, new Cons(x2, new Nil))
+    def apply[T]() = new Nil
+  }
+
+* Generics - Type Bounds
+  [S <: IntSet] = S is subtype of type IntSet (upper bound)
+    def assertAllPositive[S <: IntSet](s: S): S = ...
+  [S >: IntSet] = S is supertype of T (or T is a subtype of S) (lower bound)
+  [S >: NonEmpty <: IntSet] = mixing
+
+* Generics - Covariance (Variance refers to how subtyping between more complex types (list of T, array of T) relates to subtyping between their components)
+  Problem: Given: NonEmpty <: IntSet, does it makes sense to List[NonEmpty] <: List[IntSet] (A list of non-empty sets is a special case of a list of arbitrary sets)
+  Covariant types hold this relationship
+  in Java Arrays are covariant (Integer[] instanceof Number[] == true), but because of that array must keep the type of it's creation to check what type of elements are you putting in, to avoid problems with putting wrong types inside. It was necessary to implement Arrays.sort(Object[] a)
+
+  Arrays are NOT Covariant in Scala (different than in Java) because Arrays are mutable !!!
+  Lists are Covariant in Scala because Lists are immutable !!!
+
+* Variance
+  Given: A <: B
+  Then: if C[A] <: C[B]  => C is covariant        => in Scala: class C[+A] { ... }
+        if C[A] >: C[B]  => C is contravariant                 class C[-A] { ... }
+        if none of above => C is nonvariant/invariant          class C[A]  { ... }
+
+  Example: type A = IntSet => NonEmpty            => A <: B   (type A satisfies the same contract as type B, but it will satisfy even more)
+           type B = NonEmpty => IntSet
+
+  Rule for function types: If A2 <: A1 and B1 <: B2, then A1=>B1 <: A2=>B2
+  Functions are contravariant in their argumet types and covariant in their result type.
+    trait Function1[-T, +U] { def apply(x: T): U }
+  Scala compiler check classes with variances for (simplified):
+    - covariant type parameters can only appear in method results
+    - contravariant type parameters can only apper in method parameters
+    - invariant/nonvariant type parameters can appear anywhere
+
+* Decomposition => ex. evaluation of expressions represented as a tree of objects of different classes
+  1. x.isInstanceOf[T] && x.asInstanceOf[T]
+  2. object-oriented decomposition => each class has it's own eval() method
+    => what if we want to add additional method show()? We need to add it to all classes
+    => operations that are not local to any single class => eg. simplification of expression (a*b + a*c == a*(b+c))? limitation of OO approach!
+  3. Pattern Matching => using case classes
+    => Observation: the purpose of test and access methods used in low-level, unsafe solutions in to reverse the creation process (what subclass was used, what were the arguments)
+    trait Expr
+    case class Num(n: Int) extends Expr
+    case class Sum(e1: Expr, e2: Expr) extends Expr
+
+    def eval(e: Expr) = e match {   // throws MatchError exception if no pattern matches
+      case Num(n) => n              // matches also to subtypes of Num
+      case Sum(e1, e2) => eval(e1) + eval(e2)
+      case Num(10) => 100           // order matters => chooses first pattern that matches
+      case Prod(Sum(e1, e2), e3) => 300 // to allow proper "()" of operations
+      case _ => 999
+      case Num(_) => 998
+      case "abc" => 997             // matches in the sense of ==
+    }
+
+
+* Case classes
+  case class Num(n: Int)
+  1. Automatic companion object with apply function
+  object Num { def apply(n: Int) = new Num(n) }   // Num(1)
+  2. Allows Pattern Matching
+  3. equals (comparison by values), toString
+  4. copy(title = "new value") method with option to replace some fields
+
+
+* List (List(1,2,3) || Nil || 1 :: 2 :: Nil)
+  - operators ending in ":" associate to the right
+    A :: B :: C     ==>   A :: (B :: C)
+  - operators ending in ":" are also treated as method calls of the right-hand side
+    1 :: 2 :: Nil   ==>   Nil.::(2).::(1)
 
 
 
@@ -74,6 +149,10 @@
 
 
 
+
+
+Videos - Coursera - To Download:
+  https://www.coursera.org/learn/progfun1/lecture/dnreZ/lecture-4-4-variance-optional
 
 Videos:
   * Panel on the Past, Present, and Future of Scala (1h15min) = https://www.youtube.com/watch?v=xUWNcL7NRxg
