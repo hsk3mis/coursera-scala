@@ -20,6 +20,7 @@ object Huffman {
    */
   abstract class CodeTree {
     def chars: List[Char]
+    def weight: Int
   }
   case class Fork(left: CodeTree, right: CodeTree, chars: List[Char], weight: Int) extends CodeTree
   case class Leaf(char: Char, weight: Int) extends CodeTree {
@@ -134,8 +135,16 @@ object Huffman {
    */
     def combine(trees: List[CodeTree]): List[CodeTree] =
       trees match {
-        case tree1 :: tree2 :: tail => makeCodeTree(tree1, tree2) :: tail
+        case tree1 :: tree2 :: tail => insert(makeCodeTree(tree1, tree2), tail)
         case _ => trees
+      }
+
+    def insert(newTree: CodeTree, trees: List[CodeTree]): List[CodeTree] =
+      trees match {
+        case Nil => List(newTree)
+        case tree :: tail =>
+          if (tree.weight > newTree.weight) newTree :: trees
+          else tree :: insert(newTree, tail)
       }
   
   /**
