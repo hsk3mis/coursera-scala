@@ -101,6 +101,8 @@
     - contravariant type parameters can only apper in method parameters
     - invariant/nonvariant type parameters can appear anywhere
 
+* Compiler can infer types => so if for example we put function parameter last, then probably compiler will infer types from the previous parameters, so we'd not need to write parameters of the give function
+
 * Decomposition => ex. evaluation of expressions represented as a tree of objects of different classes
   1. x.isInstanceOf[T] && x.asInstanceOf[T]
   2. object-oriented decomposition => each class has it's own eval() method
@@ -120,7 +122,19 @@
       case _ => 999
       case Num(_) => 998
       case "abc" => 997             // matches in the sense of ==
+      case x: List[Any] => 996      // matcher something that is of type List[Any] => and also does type casting!!!
     }
+
+    Example:
+    def flatten(xs: List[Any]): List[Any] =
+      xs match {
+        case Nil => Nil
+        case x :: xs => x match {
+          case y: List[Any] => flatten(y) ++ flatten(xs)
+          case _ => x :: flatten(xs)
+        }
+      }
+    flatten(List(List(1, 1), 2, List(3, List(5, 8)))) == List(1, 1, 2, 3, 5, 8)
 
 
 * Case classes
@@ -137,12 +151,38 @@
     A :: B :: C     ==>   A :: (B :: C)
   - operators ending in ":" are also treated as method calls of the right-hand side
     1 :: 2 :: Nil   ==>   Nil.::(2).::(1)
+  - xs ::: ys => concatenation; rewriten as ys.:::(xs)
+  - xs ++ ys => concatenation of collections/iterables
+  - xs updated (n, x) => new list with modified element at position n
+  - xs indexOf x => finding element x
+  - xs contains x => finding element x
+
 
 * Tuple
-  - creation: val pair = ("abc", 123)
+  - type: (String, Int) => shortcut for type scala.Tuple2[T1, T2]
+  - creation: val pair = ("abc", 123) => shortcut for function application scala.Tuple2("abc", 123)
   - accessor: pair._1, pair._2
-  - pattern matching: case (first, second) => ...
+  - pattern matching:
+      case (first, second) => ...
+      val (a, b) = pair
 
+* Implicit Parameters - corespond to implicit objects choosen by type T
+  def mergeSort[T](xs: List[T])(implicit org: Ordering[T]): List[T]
+  object Ordering {
+    trait IntOrdering extends Ordering[Int] {
+      def compare(x: Int, y: Int) = java.lang.Integer.compare(x, y)
+    }
+    implicit object Int extends IntOrdering
+  }
+  then you can use: mergeSort(List(3,2,1)) without additional ordering parameter
+
+  Compiler will search for implicit definiton:
+    - parameter || val || object marked as implicit
+      implicit object { ... }
+      implicit val iv = ...
+    - has type compatible with T
+    - is visible at the point of the function call or is defined in a companion object associated with T
+    - error if multiple options available
 
 
 
