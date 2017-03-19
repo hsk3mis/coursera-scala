@@ -125,6 +125,9 @@
       case x: List[Any] => 996      // matcher something that is of type List[Any] => and also does type casting!!!
     }
 
+    x => x match { case c1 => e1 } is equivalent to: { case c1 => e1 }
+    (xs zip ys) map { case (x, y) => x * y }
+
     Example:
     def flatten(xs: List[Any]): List[Any] =
       xs match {
@@ -184,23 +187,61 @@
     - is visible at the point of the function call or is defined in a companion object associated with T
     - error if multiple options available
 
+* Collections (immutable !!):
+  * List => Linked-List
+  * Vector => very shallow trees; more balanced access patterns than lists
+    to 32 elements => simple Array; bigger each element changes into pointer to another Array (2^10 elements), ...
+    Access: O(log32(N))
+    better for bulk operations on multiple elements (each 32 elements group is located in a single Array close in the memory)
+    x +: xs => adds element to the beginning of the vector
+    xs :+ x => adds element the the end of the vector
+    Modification: O(log32(N)) => some new objects needs to be created to have immutable structure
+  * Seq => sequence
+  * Array and String => comes from Java; behaves like Seq and can be converted easily to Seq
+  * Range => sequence of evenly spaced integers
+    1 to 10 by 3 (1 to 10 inclusive with step 3)
+    1 until 5 (1 to 4)
+  * Set = unordered, no duplicate elements, contains = fundamental operation
+  * Map = Iterable && Function at the same time
+    val roman = Map("I" -> I, "V" -> 5, "X" -> 10)
+    roman("I") //function call, exception if no element found
+    roman get "I" //Optional as the result
+    val mapTotalFunction = map withDefaultValue "<unknown>" => return given value if function application fail => translates map partial function into total function
+
+
+* xs flatMap f = (xs map f).flatten
+* For expression: no side effect; produces new results with yield expression
+  persons: collection of case class Person
+  for (p <- persons if p.age < 20) yield p.name   ==>   persons filter (p => p.age > 20) map (p => p.name)
+  for ( s ) yield e
+    where s = sequence of generators and filters divided by ";" or { s } with multiple lines without ";"
+    for {
+      i <- 1 until n
+      j <- 1 until i
+      if isPrime(i, j)
+    } yield (i, j)
+
+* Option => None || Some(x)
+  trait Option[+A]
+  case class Some[+A](value: A) extends Option[A]
+  object None extends Option[Nothing]
+* Varargs => Repeated Parameters with "*" after type: (bindings: (Int, Double)*)
 
 
 
 
 
-
-
-
-
-
-
-Videos - Coursera - To Download:
-  https://www.coursera.org/learn/progfun1/lecture/dnreZ/lecture-4-4-variance-optional
 
 Videos:
   * Panel on the Past, Present, and Future of Scala (1h15min) = https://www.youtube.com/watch?v=xUWNcL7NRxg
   * Spark -- the Ultimate Scala Collections (44min) = https://www.youtube.com/watch?v=NW5h8d_ZyOs
+
+Functional programming notes:
+  * można dowodzić poprawności programów np. przy pomocy indukcji i przekształcania terminów, ale tylko wtedy kiedy nie ma efektów ubocznych (pure functions), bo tylko wtedy przekształcanie termów jest poprawne
+
+
+Additional things:
+  * https://www.scala-exercises.org => przykałady do nauki Scala
 
 
 Diassembling Scala code:
