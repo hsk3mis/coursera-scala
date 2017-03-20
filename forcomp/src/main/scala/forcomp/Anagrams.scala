@@ -1,4 +1,5 @@
 package forcomp
+import scala.collection.immutable.Seq
 
 
 object Anagrams {
@@ -166,40 +167,26 @@ object Anagrams {
    *  Note: There is only one anagram of an empty sentence.
    */
   def sentenceAnagrams(sentence: Sentence): List[Sentence] = {
-
-    val sentenceOccur: Occurrences  = sentenceOccurrences(sentence)
-
     def sentenceAnagramsRec(occurrences: Occurrences): List[Sentence] = {
-      for {
-        comb: Occurrences <- combinations(occurrences) if !comb.isEmpty && !dictionaryByOccurrences.get(comb).isEmpty
-        combWord: Word <- dictionaryByOccurrences.get(comb).get
-      } yield {
-        println("--------------------------------------------")
-        println(comb)
-        println(combWord)
-        println("Tail: " + subtract(occurrences, comb))
-
-        val tailOccurrences = subtract(occurrences, comb)
-        val tailComb: List[Sentence] = sentenceAnagramsRec(tailOccurrences)
-        val sentences: List[Sentence] = tailComb.map(sentence => combWord :: sentence)
-        sentences
-
-      }.flatten
-
-
-//      for {
-//        comb: Occurrences <- sentenceOccurCombinations if !dictionaryByOccurrences(comb).isEmpty
-//        occurRestAnagram: Sentence <- sentenceAnagramsRec(subtract(occurrences, comb))
-//        combWord: Word <- dictionaryByOccurrences(comb)
-//      } yield combWord :: occurRestAnagram
+      val result: List[List[Sentence]] =
+        for {
+          comb: Occurrences <- combinations(occurrences) if !comb.isEmpty && dictionaryByOccurrences.contains(comb)
+          wordFromComb: Word <- dictionaryByOccurrences(comb)
+        } yield {
+          val occurrencesSubtracted = subtract(occurrences, comb)
+          if (occurrencesSubtracted.isEmpty) List(List(wordFromComb))
+          else for {
+            tailSentence: Sentence <- sentenceAnagramsRec(occurrencesSubtracted)
+          } yield {
+            wordFromComb :: tailSentence
+          }
+        }
+      result.flatten
     }
-
-    sentenceAnagramsRec(sentenceOccur)
-
-
-
-
-
+    sentence match {
+      case Nil => List(List())
+      case _ => sentenceAnagramsRec(sentenceOccurrences(sentence))
+    }
 
     //type Word = String
     //type Sentence = List[Word]
