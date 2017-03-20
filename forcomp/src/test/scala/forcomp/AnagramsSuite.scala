@@ -37,7 +37,11 @@ class AnagramsSuite extends FunSuite  {
     assert(wordAnagrams("player").toSet === Set("parley", "pearly", "player", "replay"))
   }
 
-
+  test("word anagrams: k - no anagram for this word") {
+    intercept[NoSuchElementException] {
+      wordAnagrams("k")
+    }
+  }
 
   test("subtract: lard - r") {
     val lard = List(('a', 1), ('d', 1), ('l', 1), ('r', 1))
@@ -49,6 +53,15 @@ class AnagramsSuite extends FunSuite  {
 
   test("combinations: []") {
     assert(combinations(Nil) === List(Nil))
+  }
+
+  test("combinations: a") {
+    val a = List(('a', 1))
+    val acomb = List(
+      List(),
+      a
+    )
+    assert(combinations(a).toSet === acomb.toSet)
   }
 
   test("combinations: abba") {
