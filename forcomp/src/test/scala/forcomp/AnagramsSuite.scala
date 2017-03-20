@@ -28,6 +28,9 @@ class AnagramsSuite extends FunSuite  {
     assert(dictionaryByOccurrences.get(List(('a', 1), ('e', 1), ('t', 1))).map(_.toSet) === Some(Set("ate", "eat", "tea")))
   }
 
+  test("dictionaryByOccurrences.get: if") {
+    assert(dictionaryByOccurrences.get(List(('f', 1), ('i', 1))).map(_.toSet) === Some(Set("if")))
+  }
 
   test("word anagrams: married") {
     assert(wordAnagrams("married").toSet === Set("married", "admirer"))
@@ -48,6 +51,13 @@ class AnagramsSuite extends FunSuite  {
     val r = List(('r', 1))
     val lad = List(('a', 1), ('d', 1), ('l', 1))
     assert(subtract(lard, r) === lad)
+  }
+
+  test("subtract: laard - ral") {
+    val laard = List(('a', 2), ('d', 1), ('l', 1), ('r', 1))
+    val ral = List(('a', 1), ('r', 1), ('l', 1))
+    val ad = List(('a', 1), ('d', 1))
+    assert(subtract(laard, ral) === ad)
   }
 
 
@@ -86,6 +96,49 @@ class AnagramsSuite extends FunSuite  {
     assert(sentenceAnagrams(sentence) === List(Nil))
   }
 
+  test("sentence anagrams: a") {
+    val sentence = List("a")
+    val anas = List(
+      List("a")
+    )
+    assert(sentenceAnagrams(sentence).toSet === anas.toSet)
+  }
+
+  test("sentence anagrams: i") {
+    val sentence = List("i")
+    val anas = List(
+      List("i")
+    )
+    assert(sentenceAnagrams(sentence).toSet === anas.toSet)
+  }
+
+  test("sentence anagrams: if") {
+    val sentence = List("if")
+    val anas = List(
+      List("if")
+    )
+    assert(sentenceAnagrams(sentence).toSet === anas.toSet)
+  }
+
+  test("sentence anagrams: fi") {
+    val sentence = List("fi")
+    val anas = List(
+      List("fi")
+    )
+    assert(sentenceAnagrams(sentence).toSet === anas.toSet)
+  }
+
+  test("sentence anagrams: iiff") {
+    val sentence = List("iiff")
+    val anas = List(
+      List("if", "if"),
+      List("fi", "fi"),
+      List("if", "fi"),
+      List("fi", "if")
+    )
+    assert(sentenceAnagrams(sentence).toSet === anas.toSet)
+  }
+
   test("sentence anagrams: Linux rulez") {
     val sentence = List("Linux", "rulez")
     val anas = List(
@@ -112,5 +165,28 @@ class AnagramsSuite extends FunSuite  {
     )
     assert(sentenceAnagrams(sentence).toSet === anas.toSet)
   }
+
+  test("sentence anagrams: Yes man") {
+    val sentence = List("Yes", "man")
+    val anas = List(
+      List("en", "as", "my"),
+      List("en", "my", "as"),
+      List("man", "yes"),
+      List("men", "say"),
+      List("as", "en", "my"),
+      List("as", "my", "en"),
+      List("sane", "my"),
+      List("Sean", "my"),
+      List("my", "en", "as"),
+      List("my", "as", "en"),
+      List("my", "sane"),
+      List("my", "Sean"),
+      List("say", "men"),
+      List("yes", "man")
+    )
+    assert(sentenceAnagrams(sentence).toSet === anas.toSet)
+  }
+
+
 
 }
