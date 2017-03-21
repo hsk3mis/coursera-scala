@@ -122,7 +122,7 @@ object Anagrams {
       if (xOccurLeft == 0) xsMap -(char)
       else xsMap updated(char, xOccurLeft)
     }
-    return y.foldLeft(x.toMap)(subtractSingleOccurrence).toList.sorted
+    y.foldLeft(x.toMap)(subtractSingleOccurrence).toList.sorted
   }
 
 
@@ -183,29 +183,29 @@ object Anagrams {
   }
 
 
-  /** Solution with variable global map - not very functional :( **/
-  def sentenceAnagramsMemo(sentence: Sentence): List[Sentence] = {
-    var memo: Map[Occurrences, List[Sentence]] = Map()
-    def sentenceAnagramsMemoRec(occurrences: Occurrences): List[Sentence] =
-      occurrences match {
-        case Nil => List(Nil)
-        case _ => {
-          memo.get(occurrences) match {
-            case None => {
-              val result = for {
-                comb: Occurrences <- combinations(occurrences) if dictionaryByOccurrences.contains(comb)
-                wordFromComb: Word <- dictionaryByOccurrences(comb)
-                tailSentence: Sentence <- sentenceAnagramsMemoRec(subtract(occurrences, comb))
-              } yield (wordFromComb :: tailSentence)
-              memo = memo.updated(occurrences, result)
-              result
-            }
-            case Some(result) => result
-          }
-        }
-      }
-    sentenceAnagramsMemoRec(sentenceOccurrences(sentence))
-  }
+//  /** Solution with variable global map - not very functional :( **/
+//  def sentenceAnagramsMemo(sentence: Sentence): List[Sentence] = {
+//    var memo: Map[Occurrences, List[Sentence]] = Map()
+//    def sentenceAnagramsMemoRec(occurrences: Occurrences): List[Sentence] =
+//      occurrences match {
+//        case Nil => List(Nil)
+//        case _ => {
+//          memo.get(occurrences) match {
+//            case None => {
+//              val result = for {
+//                comb: Occurrences <- combinations(occurrences) if dictionaryByOccurrences.contains(comb)
+//                wordFromComb: Word <- dictionaryByOccurrences(comb)
+//                tailSentence: Sentence <- sentenceAnagramsMemoRec(subtract(occurrences, comb))
+//              } yield (wordFromComb :: tailSentence)
+//              memo = memo.updated(occurrences, result)
+//              result
+//            }
+//            case Some(result) => result
+//          }
+//        }
+//      }
+//    sentenceAnagramsMemoRec(sentenceOccurrences(sentence))
+//  }
 //  def sentenceAnagrams(sentence: Sentence): List[Sentence] = sentenceAnagramsMemo(sentence)
 
 }
