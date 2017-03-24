@@ -13,7 +13,6 @@
   - lazy lav - evaluated lazily + properly only once + if you get exception during evaluation then another access will try to reevaluate it
   - var - defines a mutable variable, initially set to the evaluated right side content.
 
-
 * lexical scope
   { ... } = is an expression!
   definitions from outside the block are visible inside the block
@@ -139,6 +138,17 @@
       }
     flatten(List(List(1, 1), 2, List(3, List(5, 8)))) == List(1, 1, 2, 3, 5, 8)
 
+* Function call syntax:
+  # Arity-0: you can ommit ()
+    fun()  <==> fun
+  # Infix notation: for methods with 1 argument => use only for special cases
+    a + b  <==> a.+(b)
+  # Postfix notation: for methods with no arguments => discouraged (because semicolons (;) are optionals and it can cause strange compiler errors)
+    names toList    <==>   names.toList
+  # single parameter (x) can be replaced with {x}
+
+
+
 
 * Case classes
   case class Num(n: Int)
@@ -221,24 +231,41 @@
       if isPrime(i, j)
     } yield (i, j)
 
+  If result is Nil, then of course map will return Nil and yield will be never called!!!
+    val someValue = "abc"
+    val result = for {
+      listElement <- functionThatReturnNil
+    } yield (someValue :: listElement)
+    //result will be Nil, because yield will never be called
+
 * Option => None || Some(x)
   trait Option[+A]
   case class Some[+A](value: A) extends Option[A]
   object None extends Option[Nothing]
 * Varargs => Repeated Parameters with "*" after type: (bindings: (Int, Double)*)
 
+* Lazy vs Strict Collections:
+  - lazy can need less space, but lazy can be slower if you need to recompute values multiple times; needs purely functional architecture!!!! (be more smart at what you do with it)
+  - strict can need more space for intermediate results, but it can be faster in some cases
+  - scala colections are mostly strict eg. list filter ... => but you also have lazy semantics in some places eg. list withFilter ...
+  - list.view => returns lazy collection!!!
+  - lazy collections are hard in not pure-functional paradigm!!! With laziness you can start having additional problems:
+    eg.
+      val xs = List(1,2,0) //then it's strict and you catch exception and return Nil
+      val xs = List(1,2,0).view //then it's lazy and you don't catch exception!!!! Map will return the view, and nothing will be computed!!!!
+      val result = try xs.map(1 / _) catch { case ex: ArithmeticException -> Nil }
+  - Collections Imperative (2 basic operations: iterator, add that modifies collection) VS Functional (immutable, transformations that transform collection to different collection)
 
 
 
 
 
-Videos:
-  * Panel on the Past, Present, and Future of Scala (1h15min) = https://www.youtube.com/watch?v=xUWNcL7NRxg
-  * Spark -- the Ultimate Scala Collections (44min) = https://www.youtube.com/watch?v=NW5h8d_ZyOs
 
-Functional programming notes:
-  * można dowodzić poprawności programów np. przy pomocy indukcji i przekształcania terminów, ale tylko wtedy kiedy nie ma efektów ubocznych (pure functions), bo tylko wtedy przekształcanie termów jest poprawne
 
+
+
+Nauka programowania:
+  * https://lightbot.com
 
 Additional things:
   * https://www.scala-exercises.org => przykałady do nauki Scala
@@ -249,9 +276,11 @@ Diassembling Scala code:
   * javap -c => shows implementation of the methods
 
 
+
 ????? For Future ?????
 * list.foldLeft(0)(_ + _) DZIAŁA, ale list foldLeft(0)(_ + _) NIE DZIAŁA (spacja zamiast .)!!!!!!??????????????????
-* for-yield => yield gives nothing if one of the assignments gives Nil result !!!!???? why ?????
+* Implicits and Typeclasses = http://www.cakesolutions.net/teamblogs/demystifying-implicits-and-typeclasses-in-scala
+* How to integrate easily parts of application in Scala into existing Java maven/... project
 * Parallel Collections
 * Distributed Collections
 * Actors = Akka
@@ -260,3 +289,22 @@ Diassembling Scala code:
   https://wiki.scala-lang.org/display/SW/Parser+Combinators--Getting+Started
   https://github.com/scala/scala-parser-combinators/blob/1.0.x/docs/Getting_Started.md
   http://debasishg.blogspot.com/2008/04/external-dsls-made-easy-with-scala.html
+* "Scala in Depth" book => ex. Loaner Pattern
+* ScalaZ = pure functional
+* https://github.com/bigdatagenomics => genomics analysis framework open-source
+
+
+..:: Spark ::..
+* Architecture:
+  Spark FileSystem (HDFS, Cassandra) <---> Spark Runtime <---> ClusterManager (Yarn, Mesos)
+  Spark with Scala: User input <---> Scala REPL <---> Spark Runtime <---> Scala Runtime <---> JVM
+
+* DSLs - reasons to use
+  1. Support new syntax => just sytanx, usually shallow
+  2. Support new functionality (new dimention) => like Spark => move computation from a single computer to a whole cluster => non-standard compiler pipeline or execution pipeline
+
+* Spark = DSL centered around Collections => immutable data sets equipped with functional transformers
+  RDD = Resilient Distributed Datasets
+  Scala collections, but running on cluster, with fundamental differences:
+    - Spark is lazy (Scala collections are strict)
+    - Spark has added functionality (eg. PairRDDs) (eg. cache() operation that takes and persists snapshot of current data to not have to recompute it again)
