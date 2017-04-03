@@ -179,7 +179,7 @@
       case (first, second) => ...
       val (a, b) = pair
 
-* Implicit Parameters - corespond to implicit objects choosen by type T
+* Implicit Parameters - corespond to implicit objects choosen by type T only (name doesn't matter, also there can't be multiple candidates with same type => eg. can't have 2 implicit String parameters)
   def mergeSort[T](xs: List[T])(implicit org: Ordering[T]): List[T]
   object Ordering {
     trait IntOrdering extends Ordering[Int] {
@@ -196,6 +196,46 @@
     - has type compatible with T
     - is visible at the point of the function call or is defined in a companion object associated with T
     - error if multiple options available
+
+* Implicit conversions = one argument functions or one argument class constructor
+    implicit def agentCodename(i: Int) = s"00$i"
+    def hello(name: String) = s"Hello, $name"
+    hello(7) //"Hello, 007"
+
+    implicit class Agent(code: Int) { ... }
+
+    Usage: method injection!!!! and typeclasses!!!!
+      1.minutes with implicit conversion Int => { def minutes = ... }
+
+* Typeclasses pattern = the idea is that you provide evidence (ProofThatWrapperCanFoo) that a class (Wrapper) satisfies an interface (CanFoo)
+    trait CanFoo[A] { def foos(x: A): String }
+    case class Wrapper(wrapped: String)
+    object ProofThatWrapperCanFoo extends CanFoo[Wrapper] { def foos(x: Wrapper) = x.wrapped }
+
+  - Wrapper don't have to implement CanFoo directly. Typeclasses splits definition of the class and the implementation of the interface
+  - So third party can implement interface for your classes
+  - But then if you want to use a thing that CanFoo you need 2 arguments:
+    def foo[A](thing: A, evidence: CanFoo[A]) = evidence.foos(thing)
+  - To make it simpler other languages (Haskell) solve this by having only one CanFoo[A] for a given A (evidence objects are like global variables), but in Scala you use implicits
+    implicit object ProofThatWrapperCanFoo extends CanFoo[Wrapper] { def foos(x: Wrapper) = x.wrapped }
+    def foo[A](thing: A)(implicit evidence: CanFoo[A]) = evidence.foos(thing)
+    foo(Wrapper("hi")) //object ProofThatWrapperCanFoo is the only thing in scope of type CanFoo[Wrapper]
+  - Special syntax in Scala:
+    def foo[A:CanFoo](thing: A) = implicitly[CanFoo[A]].foos(thing)
+  - Or
+    trait CanFoo[A] { def foos(x: A): String }
+    object CanFoo { def apply[A:CanFoo]: CanFoo[A] = implicitly }
+    case class Wrapper(wrapped: String)
+    implicit object WrapperCanFoo extends CanFoo[Wrapper] { def foos(x: Wrapper) = x.wrapped }
+    def foo[A:CanFoo](thing: A) = CanFoo[A].foos(thing)
+    foo(Wrapper("hi")) //foo calls CanFoo.apply()
+  - Or/And using implict conversions:
+    implicit class CanFooOps[A:CanFoo](thing: A) { def foo = CanFoo[A].foos(thing) }
+    def foo[A:CanFoo](thing: A) = thing.foo //implicit conversion to CanFooOps => CanFooOps(thing).foo
+
+
+  Def: A type class is a type system construct that supports ad hoc polymorphism. This is achieved by adding constraints to type variables in parametrically polymorphic types. Such a constraint typically involves a type class T and a type variable a, and means that a can only be instantiated to a type whose members support the overloaded operations associated with T.
+
 
 * Collections (immutable !!):
   * List => Linked-List
@@ -256,6 +296,10 @@
       val result = try xs.map(1 / _) catch { case ex: ArithmeticException -> Nil }
   - Collections Imperative (2 basic operations: iterator, add that modifies collection) VS Functional (immutable, transformations that transform collection to different collection)
 
+* String features
+  - String interpolation:
+    val name = "John Do"
+    val ret = s"Hello, $name"
 
 
 
@@ -270,6 +314,7 @@ Nauka programowania:
 Additional things:
   * https://www.scala-exercises.org => przykałady do nauki Scala
 
+Combinator = function that is dependant only on it's input parameters (no free variables)
 
 Diassembling Scala code:
   * javap -p => shows public and private members of the class
@@ -278,20 +323,23 @@ Diassembling Scala code:
 
 
 ????? For Future ?????
-* list.foldLeft(0)(_ + _) DZIAŁA, ale list foldLeft(0)(_ + _) NIE DZIAŁA (spacja zamiast .)!!!!!!??????????????????
-* Implicits and Typeclasses = http://www.cakesolutions.net/teamblogs/demystifying-implicits-and-typeclasses-in-scala
-* How to integrate easily parts of application in Scala into existing Java maven/... project
+* How to integrate easily parts of application in Scala into existing Java maven/... project => http://davidb.github.io/scala-maven-plugin/example_java.html
 * Parallel Collections
 * Distributed Collections
 * Actors = Akka
-* DSLs = scala parser combinators
+* DSLs = scala parser combinators library build into scala => to create internal DSLs easily
   http://bitwalker.org/posts/2013-08-10-learn-by-example-scala-parser-combinators/
-  https://wiki.scala-lang.org/display/SW/Parser+Combinators--Getting+Started
   https://github.com/scala/scala-parser-combinators/blob/1.0.x/docs/Getting_Started.md
   http://debasishg.blogspot.com/2008/04/external-dsls-made-easy-with-scala.html
 * "Scala in Depth" book => ex. Loaner Pattern
 * ScalaZ = pure functional
 * https://github.com/bigdatagenomics => genomics analysis framework open-source
+
+
+
+
+
+
 
 
 ..:: Spark ::..
