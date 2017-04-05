@@ -300,7 +300,7 @@
   - String interpolation:
     val name = "John Do"
     val ret = s"Hello, $name"
-
+  - raw"..." OR """...""" => string without escapin0 """abc\nabc""" (useful eg. for regular expressions)
 
 
 
@@ -328,9 +328,9 @@ Diassembling Scala code:
 * Distributed Collections
 * Actors = Akka
 * DSLs = scala parser combinators library build into scala => to create internal DSLs easily
-  http://bitwalker.org/posts/2013-08-10-learn-by-example-scala-parser-combinators/
+  http://bitwalker.org/posts/2013-08-10-learn-by-example-scala-parser-combinators/ => Reverse Polish Calculator example
   https://github.com/scala/scala-parser-combinators/blob/1.0.x/docs/Getting_Started.md
-  http://debasishg.blogspot.com/2008/04/external-dsls-made-easy-with-scala.html
+  http://debasishg.blogspot.com/2008/04/external-dsls-made-easy-with-scala.html => buy/sell actions DSL example
 * "Scala in Depth" book => ex. Loaner Pattern
 * ScalaZ = pure functional
 * https://github.com/bigdatagenomics => genomics analysis framework open-source
